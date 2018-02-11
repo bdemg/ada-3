@@ -20,12 +20,12 @@ int mapper[][SEGMENT_LENGTH] = {
             {HIGH, HIGH, HIGH, LOW, LOW, LOW, LOW}, //7
             {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH}, //8
             {HIGH, HIGH, HIGH, LOW, LOW, HIGH, HIGH}, //9
-            {LOW, LOW, LOW, HIGH, HIGH, LOW, HIGH}, //A 10
-            {LOW, LOW, HIGH, HIGH, LOW, LOW, HIGH}, //B 11
-            {LOW, HIGH, LOW, LOW, LOW, HIGH, HIGH}, //C 12
-            {HIGH, LOW, LOW, HIGH, LOW, HIGH, HIGH}, //D 13
-            {LOW, LOW, LOW, HIGH, HIGH, HIGH, HIGH}, //E 14
-            {LOW, LOW, LOW, LOW, LOW, LOW, LOW}, //F 15
+            {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH}, //A 8 {b=1,c=1,d=0}
+            {LOW, LOW, HIGH, HIGH, HIGH, HIGH, HIGH}, //b 6 {1,1,0}
+            {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, LOW}, //C 0 {0,0,1}
+            {LOW, LOW, LOW, HIGH, HIGH, LOW, HIGH}, //d 10 {1,1,1}
+            {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH}, //E 8 {0,0,1}
+            {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH}, //F 8 {0,0,0}
 };
 
 void setup() {
