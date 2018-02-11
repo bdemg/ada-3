@@ -9,6 +9,9 @@
 #define SEGMENT_LENGTH 7
 #define MAP_SIZE 16
 
+#define BUTTON 5
+int button = 0;
+
 int mapper[][SEGMENT_LENGTH] = {
             {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, LOW}, //0
             {LOW, HIGH, HIGH, LOW, LOW, LOW, LOW}, //1
@@ -37,17 +40,25 @@ void setup() {
   pinMode(e, OUTPUT);
   pinMode(f, OUTPUT);
   pinMode(g, OUTPUT);
+
+  pinMode(BUTTON, INPUT);
 }
 
 void loop() {
 
+  button = digitalRead(BUTTON);
+  
   for(int x=0; x<MAP_SIZE; x++){
 
     for(int y=0; y<SEGMENT_LENGTH; y++){
-
+      
       digitalWrite(a+y, mapper[x][y]);
     }
 
+    if( button == HIGH ){
+      while(true){}
+    }
+    
     delay(1000);
   }
 
