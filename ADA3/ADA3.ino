@@ -1,64 +1,91 @@
-#define a 7
-#define b 8
-#define c 9
-#define d 10
-#define e 11
-#define f 12
-#define g 13
+#define A 8
+#define B 9
+#define C 10
+#define D 11
 
-#define SEGMENT_LENGTH 7
+#define b 4
+#define c 5
+#define d 6
+#define f 7
+
+#define NIBBLE_LENGTH 4
 #define MAP_SIZE 16
 
-#define BUTTON 5
-int button = 0;
+bool stopper = false;
 
-int mapper[][SEGMENT_LENGTH] = {
-            {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, LOW}, //0
-            {LOW, HIGH, HIGH, LOW, LOW, LOW, LOW}, //1
-            {HIGH, HIGH, LOW, HIGH, HIGH, LOW, HIGH}, //2
-            {HIGH, HIGH, HIGH, HIGH, LOW, LOW, HIGH}, //3
-            {LOW, HIGH, HIGH, LOW, LOW, HIGH, HIGH}, //4
-            {HIGH, LOW, HIGH, HIGH, LOW, HIGH, HIGH}, //5
-            {LOW, LOW, HIGH, HIGH, HIGH, HIGH, HIGH}, //6
-            {HIGH, HIGH, HIGH, LOW, LOW, LOW, LOW}, //7
-            {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH}, //8
-            {HIGH, HIGH, HIGH, LOW, LOW, HIGH, HIGH}, //9
-            {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH}, //A 8 {b=1,c=1,d=0}
-            {LOW, LOW, HIGH, HIGH, HIGH, HIGH, HIGH}, //b 6 {1,1,0}
-            {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, LOW}, //C 0 {0,0,1}
-            {LOW, LOW, LOW, HIGH, HIGH, LOW, HIGH}, //d 10 {1,1,1}
-            {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH}, //E 8 {0,0,1}
-            {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH}, //F 8 {0,0,0}
+int mapper[][NIBBLE_LENGTH] = {
+            {LOW, LOW, LOW, LOW}, // 0
+            {LOW, LOW, LOW, HIGH}, // 1
+            {LOW, LOW, HIGH, LOW}, // 2
+            {LOW, LOW, HIGH, HIGH}, // 3
+            {LOW, HIGH, LOW, LOW}, // 4
+            {LOW, HIGH, LOW, HIGH}, // 5
+            {LOW, HIGH, HIGH, LOW}, // 6
+            {LOW, HIGH, HIGH, HIGH}, // 7
+            {HIGH, LOW, LOW, LOW}, // 8
+            {HIGH, LOW, LOW, HIGH}, // 9
+            {HIGH, LOW, LOW, LOW}, // A
+            {LOW, HIGH, HIGH, LOW}, // b
+            {LOW, LOW, LOW, LOW}, // C
+            {HIGH, LOW, LOW, LOW}, // d
+            {HIGH, LOW, LOW, LOW}, // E
+            {HIGH, LOW, LOW, LOW} // F
+};
+
+int andMapper[][NIBBLE_LENGTH] = {
+  {HIGH, HIGH, HIGH, HIGH},
+  {HIGH, HIGH, HIGH, HIGH},
+  {HIGH, HIGH, HIGH, HIGH},
+  {HIGH, HIGH, HIGH, HIGH},
+  {HIGH, HIGH, HIGH, HIGH},
+  {HIGH, HIGH, HIGH, HIGH},
+  {HIGH, HIGH, HIGH, HIGH},
+  {HIGH, HIGH, HIGH, HIGH},
+  {HIGH, HIGH, HIGH, HIGH},
+  {HIGH, HIGH, HIGH, HIGH}, // 9
+  {HIGH, HIGH, LOW, HIGH},
+  {HIGH, HIGH, HIGH, HIGH},
+  {LOW, LOW, HIGH, HIGH},
+  {HIGH, HIGH, HIGH, LOW}, // d
+  {LOW, LOW, HIGH, HIGH},
+  {LOW, LOW, LOW, HIGH}
 };
 
 void setup() {
+  
+  pinMode(A, OUTPUT);
+  pinMode(B, OUTPUT);
+  pinMode(C, OUTPUT);
+  pinMode(D, OUTPUT);
 
-  pinMode(a, OUTPUT);
   pinMode(b, OUTPUT);
   pinMode(c, OUTPUT);
   pinMode(d, OUTPUT);
-  pinMode(e, OUTPUT);
   pinMode(f, OUTPUT);
-  pinMode(g, OUTPUT);
 
-  pinMode(BUTTON, INPUT);
+  attachInterrupt(0,botonFunction,CHANGE);
+}
+
+void botonFunction(){
+  stopper = true;
 }
 
 void loop() {
 
-  button = digitalRead(BUTTON);
-  
   for(int x=0; x<MAP_SIZE; x++){
 
-    for(int y=0; y<SEGMENT_LENGTH; y++){
-      
-      digitalWrite(a+y, mapper[x][y]);
+    while(stopper){}
+
+    for(int y=0; y<NIBBLE_LENGTH; y++){ 
+       
+      digitalWrite(D-y, mapper[x][y]);
     }
 
-    if( button == HIGH ){
-      while(true){}
+    for(int y=0; y<NIBBLE_LENGTH; y++){
+
+      digitalWrite(b+y, andMapper[x][y]);
     }
-    
+
     delay(1000);
   }
 
