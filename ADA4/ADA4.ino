@@ -1,6 +1,8 @@
 #include <LiquidCrystal.h>
 #include <Keypad.h>
 
+#define LCD_ROW_LENGTH 16
+
 const byte filas = 2;
 const byte columnas = 4;
 
@@ -21,7 +23,7 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 void setup() {
   
   Serial.begin(9600);
-  lcd.begin(16, 2);
+  lcd.begin(LCD_ROW_LENGTH, 2);
 }
 
 
@@ -40,6 +42,7 @@ void loop() {
 void printPcMessage(String message){
    
  Serial.println(message);
+ cleanLCD(0);
  lcd.setCursor(0, 0);
  lcd.print(message);
 }
@@ -47,7 +50,6 @@ void printPcMessage(String message){
 void handlePressedKey(char tecla){
   
   switch(tecla){
-    
       case '1':
       //llenar un 20% de la parte de abajo
       break;
@@ -69,7 +71,7 @@ void handlePressedKey(char tecla){
       break;
       
       case '0':
-      //llenar un 0% de la parte de abajo (si nos da tiempo, no se pide)
+      cleanLCD(1);//llenar un 0% de la parte de abajo (si nos da tiempo, no se pide)
       break;
       
       default:
@@ -85,9 +87,17 @@ void fillAnimation(int fillGrade){
   lcd.setCursor(0, 1);
   
   for(int i = 0; i < fillGrade; i++){
-    for(int j = 0; j < 16; j++){
+    for(int j = 0; j < LCD_ROW_LENGTH; j++){
       //imprimir 16 veces el caracter
     }
     delay(300);
   }
+}
+
+void cleanLCD(int line){
+ 
+ lcd.setCursor(0, line);
+ for(int j = 0; j < LCD_ROW_LENGTH; j++){
+      lcd.print(" ");
+    }
 }
