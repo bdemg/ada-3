@@ -16,14 +16,53 @@ byte colupin [columnas] = {11, 10, 9, 8};
 
 Keypad miteclado = Keypad(makeKeymap(teclado), filapin, colupin, filas, columnas);
 
-
+// rs: the number of the Arduino pin that is connected to the RS pin on the LCD
+// enable: the number of the Arduino pin that is connected to the enable pin on the LCD
+// d4, d5, d6, d7: the numbers of the Arduino pins that are connected to the corresponding data pins on the LCD.
 const int rs = 7, en = 6, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+byte animatePartOne[8]={
+B00000,
+B00000,
+B00000,
+B00000,
+B00000,
+B11111,
+B11111,
+B11111,
+};
+
+byte animatePartTwo[8]={
+B00000,
+B00000,
+B11111,
+B11111,
+B11111,
+B11111,
+B11111,
+B11111,
+};
+
+byte animatePartThree[8]={
+B11111,
+B11111,
+B11111,
+B11111,
+B11111,
+B11111,
+B11111,
+B11111,
+};
 
 void setup() {
   
   Serial.begin(9600);
   lcd.begin(LCD_ROW_LENGTH, 2);
+
+  lcd.createChar(1,animatePartOne);
+  lcd.createChar(2,animatePartTwo);
+  lcd.createChar(3,animatePartThree);
 }
 
 
@@ -83,15 +122,43 @@ void handlePressedKey(char tecla){
 }
 
 void fillAnimation(int fillGrade){
-  
-  lcd.setCursor(0, 1);
-  
-  for(int i = 0; i < fillGrade; i++){
-    for(int j = 0; j < LCD_ROW_LENGTH; j++){
-      //imprimir 16 veces el caracter
+
+  // lcd.setCursor(col, row);
+
+  if(fillGrade >= 4){
+
+    // Imprime las tres animaciones en la fila de abajo.
+    for(int i = 0; i < 3; i++){
+      lcd.setCursor(0,1);
+      for(int j = 0; j < LCD_ROW_LENGTH; j++){
+        lcd.write(i+1);
+      }
+      delay(300);
     }
-    delay(300);
+
+    // Imprime la animación correspondiente en la fila de arriba.
+    for(int i = 0; i < (fillGrade - 4); i++){
+      lcd.setCursor(0,0);
+      for(int j = 0; j < LCD_ROW_LENGTH; j++){
+        lcd.write(i+1);
+      }
+      delay(300);
+    }
+    
   }
+  else{
+
+    // Imprime la animación correspondiente en la fila de abajo
+    for(int i = 0; i < fillGrade; i++){
+      lcd.setCursor(0,1);
+      for(int j = 0; j < LCD_ROW_LENGTH; j++){
+        //imprimir 16 veces el caracters
+        lcd.write(i+1);
+      }
+      delay(300);
+    }
+  }
+  
 }
 
 void cleanLCD(int line){
