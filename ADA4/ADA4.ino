@@ -81,7 +81,7 @@ void loop() {
 void printPcMessage(String message){
    
  Serial.println(message);
- cleanLCD(0);
+ cleanLCDLine(0);
  lcd.setCursor(0, 0);
  lcd.print(message);
 }
@@ -90,27 +90,38 @@ void handlePressedKey(char tecla){
   
   switch(tecla){
       case '1':
-      //llenar un 20% de la parte de abajo
+      cleanLCDLine(0);
+      cleanLCDLine(1);
+      fillAnimation(1);//llenar un 20% de la pantalla
       break;
       
       case '2':
-      //llenar un 40% de la parte de abajo
+      cleanLCDLine(0);
+      cleanLCDLine(1);
+      fillAnimation(2);//llenar un 40% de la pantalla
       break;
       
       case '3':
-      //llenar un 60% de la parte de abajo
+      cleanLCDLine(0);
+      cleanLCDLine(1);
+      fillAnimation(3);//llenar un 60% de la pantalla
       break;
       
       case '4':
-      //llenar un 80% de la parte de abajo
+      cleanLCDLine(0);
+      cleanLCDLine(1);
+      fillAnimation(4);//llenar un 80% de la pantalla
       break;
       
       case '5':
-      //llenar un 100% de la parte de abajo
+      cleanLCDLine(0);
+      cleanLCDLine(1);
+      fillAnimation(5);//llenar un 100% de la pantalla
       break;
       
       case '0':
-      cleanLCD(1);//llenar un 0% de la parte de abajo (si nos da tiempo, no se pide)
+      cleanLCDLine(0);
+      cleanLCDLine(1);//llenar un 0% de la pantalla
       break;
       
       default:
@@ -161,7 +172,7 @@ void fillAnimation(int fillGrade){
   
 }
 
-void cleanLCD(int line){
+void cleanLCDLine(int line){
  
  lcd.setCursor(0, line);
  for(int j = 0; j < LCD_ROW_LENGTH; j++){
