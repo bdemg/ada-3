@@ -78,6 +78,25 @@ void loop() {
   
 }
 
+void menu(){
+  Serial.println("Elige una opción: ");
+  Serial.println("1: Escribir texto ");
+  Serial.println("2: Imprimir imagen ");
+}
+
+void selectAction(int action){
+  switch(action){
+    case 1: 
+      String pcMessage = Serial.readString();
+      if(pcMessage != ""){
+        printPcMessage(pcMessage);
+      }
+    case 2:
+      char tecla = miteclado.getKey();
+      handlePressedKey(tecla);
+  }
+}
+
 void printPcMessage(String message){
    
  Serial.println(message);
