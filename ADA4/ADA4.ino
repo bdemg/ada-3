@@ -1,181 +1,79 @@
-#include <LiquidCrystal.h>
 #include <Keypad.h>
 
-#define LCD_ROW_LENGTH 16
+#include "tones.h"
 
-const byte filas = 2;
+#define BUZZER_PIN 3
+
+int levelsToneLength[] = {3, 4, 5};
+
+char levelOneTones[3];
+char levelTwoTones[4];
+char levelThreeTones[5];
+
+char *levelTones[] = {levelOneTones, levelTwoTones, levelThreeTones};
+
+int currentLevel;
+
+bool hasPlayedLevelNotes = false;
+
+const byte filas = 4;
 const byte columnas = 4;
 
 char teclado [filas][columnas] ={
-  {'1', '2', '3', '4'},
-  {'5', '0', '0', '0'}
+  {NOTE_C1, NOTE_D1, NOTE_E1, NOTE_F1},
+  {NOTE_G1, NOTE_A1, NOTE_AS1, NOTE_B1},
+  {NOTE_C2, NOTE_D2, NOTE_E2, NOTE_F2},
+  {NOTE_G2, NOTE_A2, NOTE_AS2, NOTE_B2}
 };
 
-byte filapin [filas] = {13, 12};
-byte colupin [columnas] = {11, 10, 9, 8};
+byte filapin [filas] = {13, 12, 11, 10};
+byte colupin [columnas] = {9, 8, 7, 6};
 
 Keypad miteclado = Keypad(makeKeymap(teclado), filapin, colupin, filas, columnas);
 
-// rs: the number of the Arduino pin that is connected to the RS pin on the LCD
-// enable: the number of the Arduino pin that is connected to the enable pin on the LCD
-// d4, d5, d6, d7: the numbers of the Arduino pins that are connected to the corresponding data pins on the LCD.
-const int rs = 7, en = 6, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
-
-byte animatePartOne[8]={
-B00000,
-B00000,
-B00000,
-B00000,
-B00000,
-B11111,
-B11111,
-B11111,
-};
-
-byte animatePartTwo[8]={
-B00000,
-B00000,
-B11111,
-B11111,
-B11111,
-B11111,
-B11111,
-B11111,
-};
-
-byte animatePartThree[8]={
-B11111,
-B11111,
-B11111,
-B11111,
-B11111,
-B11111,
-B11111,
-B11111,
-};
-
 void setup() {
-  
-  Serial.begin(9600);
-  lcd.begin(LCD_ROW_LENGTH, 2);
+  loadTones();
+  currentLevel = 0;
+}
 
-  lcd.createChar(1,animatePartOne);
-  lcd.createChar(2,animatePartTwo);
-  lcd.createChar(3,animatePartThree);
+void loadTones(){
+  //Leer de la EEPROM los tonos y ponerlo en los arreglos
 }
 
 
 void loop() {
   
-  String pcMessage = Serial.readString();
-  if(pcMessage != ""){
-    printPcMessage(pcMessage);
-  }
-  
-  char tecla = miteclado.getKey();
-  handlePressedKey(tecla);
-  
-}
-
-void printPcMessage(String message){
-   
- Serial.println(message);
- cleanLCDLine(0);
- lcd.setCursor(0, 0);
- lcd.print(message);
-}
-
-void handlePressedKey(char tecla){
-  
-  switch(tecla){
-      case '1':
-      cleanLCDLine(0);
-      cleanLCDLine(1);
-      fillAnimation(1);//llenar un 20% de la pantalla
-      break;
-      
-      case '2':
-      cleanLCDLine(0);
-      cleanLCDLine(1);
-      fillAnimation(2);//llenar un 40% de la pantalla
-      break;
-      
-      case '3':
-      cleanLCDLine(0);
-      cleanLCDLine(1);
-      fillAnimation(3);//llenar un 60% de la pantalla
-      break;
-      
-      case '4':
-      cleanLCDLine(0);
-      cleanLCDLine(1);
-      fillAnimation(4);//llenar un 80% de la pantalla
-      break;
-      
-      case '5':
-      cleanLCDLine(0);
-      cleanLCDLine(1);
-      fillAnimation(5);//llenar un 100% de la pantalla
-      break;
-      
-      case '0':
-      cleanLCDLine(0);
-      cleanLCDLine(1);//llenar un 0% de la pantalla
-      break;
-      
-      default:
-      return;
-      break;
-  }
-  
-  Serial.println(tecla);
-}
-
-void fillAnimation(int fillGrade){
-
-  // lcd.setCursor(col, row);
-
-  if(fillGrade >= 4){
-
-    // Imprime las tres animaciones en la fila de abajo.
-    for(int i = 0; i < 3; i++){
-      lcd.setCursor(0,1);
-      for(int j = 0; j < LCD_ROW_LENGTH; j++){
-        lcd.write(i+1);
-      }
-      delay(300);
-    }
-
-    // Imprime la animación correspondiente en la fila de arriba.
-    for(int i = 0; i < (fillGrade - 4); i++){
-      lcd.setCursor(0,0);
-      for(int j = 0; j < LCD_ROW_LENGTH; j++){
-        lcd.write(i+1);
-      }
-      delay(300);
-    }
+  if(!hasPlayedLevelNotes){
     
-  }
-  else{
-
-    // Imprime la animación correspondiente en la fila de abajo
-    for(int i = 0; i < fillGrade; i++){
-      lcd.setCursor(0,1);
-      for(int j = 0; j < LCD_ROW_LENGTH; j++){
-        //imprimir 16 veces el caracters
-        lcd.write(i+1);
-      }
-      delay(300);
+    playMelody(levelTones[currentLevel]);
+    hasPlayedLevelNotes = true;
+    
+  }else{
+    
+    char tecla = miteclado.getKey();
+    if(tecla != '\0'){
+      //Hacer algo 
     }
   }
   
 }
 
-void cleanLCDLine(int line){
- 
- lcd.setCursor(0, line);
- for(int j = 0; j < LCD_ROW_LENGTH; j++){
-      lcd.print(" ");
-    }
+void playMelody(char melody[]){
+    // iterate over the notes of the melody:
+  for (int thisNote = 0; thisNote < levelsToneLength[currentLevel]; thisNote++) {
+
+    // to calculate the note duration, take one second divided by the note type.
+    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+    int noteDuration = 1000 / 2;
+    tone(BUZZER_PIN, melody[thisNote], noteDuration);
+
+    // to distinguish the notes, set a minimum time between them.
+    // the note's duration + 30% seems to work well:
+    int pauseBetweenNotes = noteDuration * 1.30;
+    delay(pauseBetweenNotes);
+    // stop the tone playing:
+    noTone(BUZZER_PIN);
+  }
 }
+
+
