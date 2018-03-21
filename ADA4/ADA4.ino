@@ -42,20 +42,20 @@ void loadTones(){
 
 
 void loop() {
-  
+
   if(!hasPlayedLevelNotes){
-    
+
     playMelody(levelTones[currentLevel]);
     hasPlayedLevelNotes = true;
-    
+
   }else{
-    
+
     char tecla = miteclado.getKey();
     if(tecla != '\0'){
-      //Hacer algo 
+      //Hacer algo
     }
   }
-  
+
 }
 
 void playMelody(char melody[]){
@@ -75,5 +75,3 @@ void playMelody(char melody[]){
     noTone(BUZZER_PIN);
   }
 }
-
-
