@@ -1,5 +1,5 @@
+#include <EEPROM.h>
 #include <Keypad.h>
-
 #include "tones.h"
 
 #define BUZZER_PIN 3
@@ -37,7 +37,17 @@ void setup() {
 }
 
 void loadTones(){
-  //Leer de la EEPROM los tonos y ponerlo en los arreglos
+
+  int eepromAddress = 0;
+  
+  for(int levelCount = 0; levelCount < 3; levelCount++){
+    
+    for(int toneCount = 0; toneCount < levelsToneLength[levelCount]; toneCount++){
+      
+        levelTones[levelCount][toneCount] = EEPROM.read(eepromAddress);
+        eepromAddress++;
+   }  
+  }
 }
 
 
@@ -59,6 +69,7 @@ void loop() {
 }
 
 void playMelody(char melody[]){
+  
     // iterate over the notes of the melody:
   for (int thisNote = 0; thisNote < levelsToneLength[currentLevel]; thisNote++) {
 
