@@ -18,7 +18,13 @@ char *levelTones[] = {levelOneTones, levelTwoTones, levelThreeTones};
 //------------------------------------
 //Variables para controlar el flujo del juego
 int currentLevel;
+int levelInputsCount;
 bool hasPlayedLevelNotes = false;
+
+char levelOneInputs[2];
+char levelTwoInputs[3];
+char levelThreeInputs[4];
+char *levelInputs[] = {levelOneInputs, levelTwoInputs, levelThreeInputs};
 
 //-----------------------------------
 //Creación del teclado
@@ -44,6 +50,7 @@ HashMap<char,int> hashMap = HashMap<char,int>( hashRawArray , HASH_SIZE );
 void setup() {
   loadTones();
   currentLevel = 0;
+  levelInputsCount = 0;
 
   hashMap[0](NOTE_E2,9);
   hashMap[1](NOTE_F2,8);
@@ -77,7 +84,7 @@ void loop() {
 
     char tecla = miteclado.getKey();
     if(tecla != '\0'){
-      //Hacer algo
+      handleKeyboardInput(tecla);
     }
   }
 
@@ -120,4 +127,46 @@ void turnOffToneLed(char note){
     digitalWrite(ledPin, LOW);
 }
 
+
+void handleKeyboardInput(char key){
+
+ if(levelInputsCount < levelsToneLength[currentLevel]){
+
+    //tal vez tocar el tono e iluminar el led
+    levelInputs[currentLevel][levelInputsCount] = key;
+    levelInputsCount++;
+ }
+
+ if(levelInputsCount >= levelsToneLength[currentLevel]){
+
+    checkForLevelEnd();
+ }
+}
+
+void checkForLevelEnd(){
+
+  if(areInputsCorrect()){
+
+      //Tonito de victoria y mover el servo
+      currentLevel++;
+      hasPlayedLevelNotes = false;
+      levelInputsCount = 0;
+  } else{
+
+    //Tonito sad
+      hasPlayedLevelNotes = false;
+      levelInputsCount = 0;
+  }
+}
+
+bool areInputsCorrect(){
+  
+  for (int thisNote = 0; thisNote < levelsToneLength[currentLevel]; thisNote++) {
+
+    if(levelInputs[currentLevel][thisNote] != levelTones[currentLevel][thisNote]){
+      return false;
+    }
+  }
+  return true;
+}
 
