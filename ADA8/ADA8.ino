@@ -1,6 +1,7 @@
 #include <EEPROM.h>
 #include <Keypad.h>
 #include <HashMap.h>
+#include <Servo.h>
 #include "tones.h"
 
 #define BUZZER_PIN 3
@@ -25,6 +26,18 @@ char levelOneInputs[2];
 char levelTwoInputs[3];
 char levelThreeInputs[4];
 char *levelInputs[] = {levelOneInputs, levelTwoInputs, levelThreeInputs};
+
+int winMelody[] = {
+  NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4
+};
+int winMelodyLength = 8;
+
+int loseMelody[] = {
+  NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4
+};
+int loseMelodyLength = 8;
+
+Servo servo;
 
 //-----------------------------------
 //Creación del teclado
@@ -56,6 +69,8 @@ void setup() {
   hashMap[1](NOTE_F2,8);
   hashMap[2](NOTE_A2,7);
   hashMap[3](NOTE_B2,6);
+  
+  servo.attach(5);
 }
 
 void loadTones(){
@@ -133,6 +148,8 @@ void handleKeyboardInput(char key){
  if(levelInputsCount < levelsToneLength[currentLevel]){
 
     //tal vez tocar el tono e iluminar el led
+	playSingleTone(key);
+	
     levelInputs[currentLevel][levelInputsCount] = key;
     levelInputsCount++;
  }
@@ -143,20 +160,65 @@ void handleKeyboardInput(char key){
  }
 }
 
+void playSingleTone(char note){
+	
+	int noteDuration = 1000 / 2;
+	tone(BUZZER_PIN, note, noteDuration);
+	
+	lightUpToneLed(note);
+	
+	int pauseBetweenNotes = noteDuration * 1.30;
+    delay(pauseBetweenNotes);
+	
+	noTone(BUZZER_PIN);
+	turnOffToneLed(note);
+}
+
 void checkForLevelEnd(){
 
   if(areInputsCorrect()){
 
       //Tonito de victoria y mover el servo
+	  playSingleMelody(winMelody[], winMelodyLength);
+	  moveServo();
+	  
       currentLevel++;
       hasPlayedLevelNotes = false;
       levelInputsCount = 0;
   } else{
 
     //Tonito sad
+	playSingleMelody(loseMelody[], loseMelodyLength);
+	
       hasPlayedLevelNotes = false;
       levelInputsCount = 0;
   }
+}
+
+void playSingleMelody(int melody[], int melodyLength){
+	
+	for (int thisNote = 0; thisNote < melodyLength; thisNote++) {
+		
+		int noteDuration = 1000 / 2;
+		tone(BUZZER_PIN, melody[thisNote], noteDuration);
+		
+		int pauseBetweenNotes = noteDuration * 1.30;
+		delay(pauseBetweenNotes);
+		
+		noTone(BUZZER_PIN);
+	}
+}
+
+void moveServo(){
+	
+	servo1.write(90);
+    delay(15);
+	servo1.write(0);
+    delay(15);
+	servo1.write(90);
+    delay(15);
+	servo1.write(0);
+    delay(15);
 }
 
 bool areInputsCorrect(){
