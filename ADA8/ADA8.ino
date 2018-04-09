@@ -27,13 +27,15 @@ char levelTwoInputs[3];
 char levelThreeInputs[4];
 char *levelInputs[] = {levelOneInputs, levelTwoInputs, levelThreeInputs};
 
+//------------------------------------
+//variables relacionadas con el final de las rondas
 int winMelody[] = {
   NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4
 };
 int winMelodyLength = 8;
 
 int loseMelody[] = {
-  NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4
+  NOTE_C3, NOTE_G2, NOTE_G2, NOTE_A2, NOTE_G2, 0, NOTE_B2, NOTE_C3
 };
 int loseMelodyLength = 8;
 
@@ -90,19 +92,22 @@ void loadTones(){
 
 void loop() {
 
-  if(!hasPlayedLevelNotes){
-
-    playMelody(levelTones[currentLevel]);
-    hasPlayedLevelNotes = true;
-
-  }else{
-
-    char tecla = miteclado.getKey();
-    if(tecla != '\0'){
-      handleKeyboardInput(tecla);
+  if(currentLevel<3){
+    
+    if(!hasPlayedLevelNotes){
+  
+      playMelody(levelTones[currentLevel]);
+      hasPlayedLevelNotes = true;
+  
+    }else{
+  
+      char tecla = miteclado.getKey();
+      if(tecla != '\0'){
+        handleKeyboardInput(tecla);
+      }
     }
+    
   }
-
 }
 
 void playMelody(char melody[]){
@@ -179,16 +184,16 @@ void checkForLevelEnd(){
   if(areInputsCorrect()){
 
       //Tonito de victoria y mover el servo
-	  playSingleMelody(winMelody[], winMelodyLength);
-	  moveServo();
+  	  playSingleMelody(winMelody[], winMelodyLength);
+  	  moveServo();
 	  
       currentLevel++;
       hasPlayedLevelNotes = false;
       levelInputsCount = 0;
   } else{
 
-    //Tonito sad
-	playSingleMelody(loseMelody[], loseMelodyLength);
+      //Tonito sad
+  	  playSingleMelody(loseMelody[], loseMelodyLength);
 	
       hasPlayedLevelNotes = false;
       levelInputsCount = 0;
