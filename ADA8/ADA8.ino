@@ -184,7 +184,7 @@ void checkForLevelEnd(){
   if(areInputsCorrect()){
 
       //Tonito de victoria y mover el servo
-  	  playSingleMelody(winMelody[], winMelodyLength);
+  	  playSingleMelody(winMelody, winMelodyLength);
   	  moveServo();
 	  
       currentLevel++;
@@ -193,7 +193,7 @@ void checkForLevelEnd(){
   } else{
 
       //Tonito sad
-  	  playSingleMelody(loseMelody[], loseMelodyLength);
+  	  playSingleMelody(loseMelody, loseMelodyLength);
 	
       hasPlayedLevelNotes = false;
       levelInputsCount = 0;
@@ -216,13 +216,13 @@ void playSingleMelody(int melody[], int melodyLength){
 
 void moveServo(){
 	
-	servo1.write(90);
+	servo.write(90);
     delay(15);
-	servo1.write(0);
+	servo.write(0);
     delay(15);
-	servo1.write(90);
+	servo.write(90);
     delay(15);
-	servo1.write(0);
+	servo.write(0);
     delay(15);
 }
 
