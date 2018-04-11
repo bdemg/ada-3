@@ -30,14 +30,13 @@ char *levelInputs[] = {levelOneInputs, levelTwoInputs, levelThreeInputs};
 //------------------------------------
 //variables relacionadas con el final de las rondas
 int winMelody[] = {
-  NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4
+  NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0
 };
-int winMelodyLength = 8;
+int winMelodyLength = 6;
 
 int loseMelody[] = {
-  NOTE_C3, NOTE_G2, NOTE_G2, NOTE_A2, NOTE_G2, 0, NOTE_B2, NOTE_C3
-};
-int loseMelodyLength = 8;
+  NOTE_C3, NOTE_G2, NOTE_G2, NOTE_A2, NOTE_G2, 0};
+int loseMelodyLength = 6;
 
 Servo servo;
 
@@ -51,8 +50,8 @@ char teclado [filas][columnas] ={
   {NOTE_A2, NOTE_B2}
 };
 
-byte filapin [filas] = {13, 12};
-byte colupin [columnas] = {11, 10};
+byte colupin [filas] = {12, 13};
+byte filapin [columnas] = {10, 11};
 
 Keypad miteclado = Keypad(makeKeymap(teclado), filapin, colupin, filas, columnas);
 
@@ -63,6 +62,11 @@ HashType<char,int> hashRawArray[HASH_SIZE];
 HashMap<char,int> hashMap = HashMap<char,int>( hashRawArray , HASH_SIZE );
 
 void setup() {
+  Serial.begin(9600);
+  pinMode(9, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(6, OUTPUT);
   loadTones();
   currentLevel = 0;
   levelInputsCount = 0;
@@ -138,6 +142,7 @@ void playMelody(char melody[]){
 void lightUpToneLed(char note){
 
     int ledPin = hashMap.getValueOf(note);
+    Serial.println(ledPin);
     digitalWrite(ledPin, HIGH);
 }
 
@@ -187,7 +192,7 @@ void checkForLevelEnd(){
   	  playSingleMelody(winMelody, winMelodyLength);
   	  moveServo();
 	  
-      currentLevel++;
+      currentLevel = currentLevel + 1;
       hasPlayedLevelNotes = false;
       levelInputsCount = 0;
   } else{
