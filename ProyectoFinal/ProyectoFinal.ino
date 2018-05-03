@@ -6,7 +6,10 @@
 
 #define RST_PIN  9 
 #define SS_PIN  10
+
 #define PSWRD_LEN 4
+#define KEYPAD_LED A0
+#define ACCESS_LED A1
 
 MFRC522 hola(SS_PIN, RST_PIN);
 
@@ -16,6 +19,7 @@ int passwordLength = PSWRD_LEN;
 char passwordInputs[PSWRD_LEN];
 char storedPassword[PSWRD_LEN];
 bool hasCardBeenRead;
+bool watingForPassword;
 int passwordInputsCount;
 
 //-----------------------------------
@@ -30,8 +34,8 @@ char teclado [filas][columnas] ={
   {'*', '0', '#'}
 };
 
-byte colupin [columnas] = {11, 12, 13}; //CAMBIAR
-byte filapin [filas] = {7, 8, 9, 10}; //CAMBIAR
+byte colupin [columnas] = {6, 7, 8}; //CAMBIAR
+byte filapin [filas] = {2, 3, 4, 5}; //CAMBIAR
 
 Keypad miteclado = Keypad(makeKeymap(teclado), filapin, colupin, filas, columnas);
 //-----------------------------------
@@ -52,9 +56,14 @@ void setup() {
   SPI.begin();
   hola.PCD_Init();
   Serial.println("Lectura del UID");
-  servo.attach(5);
+  
   hasCardBeenRead = false;
+  watingForPassword = false;
   passwordInputsCount = 0;
+
+  servo.attach(A2);
+  pinMode(KEYPAD_LED, OUTPUT);
+  pinMode(ACCESS_LED, OUTPUT);
 }
 
 void loop() {
@@ -62,9 +71,16 @@ void loop() {
   if(!hasCardBeenRead){
 
     readCard();
-  } else {
+  } else if(watingForPassword){
 
     readKeypad();
+  } else {
+
+    char tecla = miteclado.getKey();
+    if(tecla == '*'){
+      
+      resetSystem();
+    }    
   }
   
 }
@@ -83,7 +99,9 @@ void readCard(){
       
       if(isCardInMemory(hola.uid.uidByte, hola.uid.size)){
        
-        //pasa a dejarte escribir algo en el keypad
+        digitalWrite(KEYPAD_LED, HIGH);
+        watingForPassword = true;
+        hasCardBeenRead = true;
       } else {
         
         //Mandalo a la verga morro
@@ -100,7 +118,8 @@ void readKeypad(){
   
   if(tecla != '\0'){
     if(tecla == '*'){
-      //cancelar
+      
+      resetSystem();
     } else {
       handlePasswordInput(tecla);
     }
@@ -159,14 +178,16 @@ void checkForCorrectPassword(){
 
   if(areInputsCorrect()){
 
-      //mover el servo y abrir la puerta
-      
-      //poner el sistema en estado de espera del cierre
+      //Permitir acceso
+      servo.write(178);
+      digitalWrite(ACCESS_LED, HIGH);
+      watingForPassword = false;
   } else{
 
      //informar de contraseña errónea
-
+     informWrongPassword();
      //poner el sistema en el estado inicial
+     resetSystem();
   }
 }
 
@@ -180,4 +201,20 @@ bool areInputsCorrect(){
   }
   return true;
 }
+
+void informWrongPassword(){
+
+  //Flashear los leds de manera intercalada (uno si y uno no) por un segundo
+}
+
+void resetSystem(){
+      
+      hasCardBeenRead = false;
+      watingForPassword = false;
+      passwordInputsCount = 0;
+      digitalWrite(KEYPAD_LED, LOW);
+      digitalWrite(ACCESS_LED, LOW);
+      servo.write(2);
+}
+
 
