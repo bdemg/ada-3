@@ -60,6 +60,7 @@ void setup() {
   hasCardBeenRead = false;
   watingForPassword = false;
   passwordInputsCount = 0;
+  loadPassword();
 
   servo.attach(A2);
   pinMode(KEYPAD_LED, OUTPUT);
@@ -102,9 +103,11 @@ void readCard(){
         digitalWrite(KEYPAD_LED, HIGH);
         watingForPassword = true;
         hasCardBeenRead = true;
+        Serial.println("Tarjeta reconocida");
       } else {
         
-        //Mandalo a la verga morro
+        Serial.println("Tarjeta rechazada");
+        informWrongCredentials();
       }
       Serial.println();
       hola.PICC_HaltA();
@@ -117,6 +120,7 @@ void readKeypad(){
   char tecla = miteclado.getKey();
   
   if(tecla != '\0'){
+    Serial.println(tecla);
     if(tecla == '*'){
       
       resetSystem();
@@ -185,7 +189,7 @@ void checkForCorrectPassword(){
   } else{
 
      //informar de contraseña errónea
-     informWrongPassword();
+     informWrongCredentials();
      //poner el sistema en el estado inicial
      resetSystem();
   }
@@ -194,7 +198,7 @@ void checkForCorrectPassword(){
 bool areInputsCorrect(){
   
   for (int currentChar = 0; currentChar < passwordLength; currentChar++) {
-
+    
     if(passwordInputs[currentChar] != storedPassword[currentChar]){
       return false;
     }
@@ -202,9 +206,18 @@ bool areInputsCorrect(){
   return true;
 }
 
-void informWrongPassword(){
+void informWrongCredentials(){
 
   //Flashear los leds de manera intercalada (uno si y uno no) por un segundo
+
+  for(int i=0; i<3; i++){
+    digitalWrite(ACCESS_LED, HIGH);
+    digitalWrite(KEYPAD_LED, LOW);
+    delay(200);
+    digitalWrite(ACCESS_LED, LOW);
+    digitalWrite(KEYPAD_LED, HIGH);
+    delay(200);
+  }
 }
 
 void resetSystem(){
