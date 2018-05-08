@@ -140,30 +140,6 @@ bool isCardInMemory(byte cardId[], int sizeOfId){
   return true;
 }
 
-void saveInMemory(byte cardId[], int sizeOfId){
-
-  for (byte i = 0; i < sizeOfId; i++) {
-
-    EEPROM.put( 10+i, cardId[i] );
-  }
-}
-
-
-bool isInMemory(byte hex, int i){
-
-  if(EEPROM.read(10+i) == hex){
-    return true;
-  }
-  else{
-    return false;
-  }
-  /*Serial.print(EEPROM.read(10),HEX);
-  Serial.print(EEPROM.read(11),HEX);
-  Serial.print(EEPROM.read(12),HEX);
-  Serial.print(EEPROM.read(13),HEX);
-  Serial.println();*/
-}
-
 void handlePasswordInput(char key){
 
  if(passwordInputsCount < passwordLength){
